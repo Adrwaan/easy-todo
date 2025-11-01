@@ -1,6 +1,7 @@
-
 export default function page() {
   return (
-    <div>Hello World!</div>
-  )
+    <div className="text-5xl font-semibold w-screen h-dvh flex items-center justify-center">
+      Hello World!
+    </div>
+  );
 }
