@@ -1,7 +1,9 @@
+import { LoginCard } from "./_components/login/login-card";
+
 export default function page() {
   return (
-    <div className="text-5xl font-semibold w-screen h-dvh flex items-center justify-center">
-      Hello World!
+    <div className="flex h-dvh w-screen items-center justify-center bg-foreground">
+      <LoginCard />
     </div>
   );
 }
