@@ -1,14 +1,18 @@
-import type { HTMLAttributes } from "react";
+import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-interface Props extends HTMLAttributes<HTMLInputElement> {
+interface Props
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   id: string;
   label: string;
 }
 
-export function RegisterInput({ id, label, className = "", ...props }: Props) {
+export function InputWithLabel({ id, label, className = "", ...props }: Props) {
   return (
     <div className="flex w-full flex-col gap-1">
       <Label className="font-semibold" htmlFor={id}>
@@ -20,6 +24,7 @@ export function RegisterInput({ id, label, className = "", ...props }: Props) {
           "border-gray-300 focus-visible:ring-blue-600/40",
           className,
         )}
+        placeholder=""
         {...props}
       />
     </div>

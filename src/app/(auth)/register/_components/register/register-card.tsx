@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RegisterPasswordProvider } from "@/contexts/password-context";
 import { RegisterForm } from "./register-form";
 
 export function RegisterCard() {
@@ -11,7 +12,11 @@ export function RegisterCard() {
         Crie sua conta na
         <br /> <span className="text-blue-500">EasyTodo!</span>
       </h1>
-      <RegisterForm />
+
+      <RegisterPasswordProvider>
+        <RegisterForm />
+      </RegisterPasswordProvider>
+
       <p className="font-medium text-sm">
         Já tem uma conta? Clique{" "}
         <Link
