@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ const registerSchema = z
 type RegisterSchemaType = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
+  const router = useRouter();
   const { setPassword } = useRegisterPassword();
 
   const { register, handleSubmit, formState, watch, resetField } = useForm({
@@ -64,7 +66,6 @@ export function RegisterForm() {
         name,
         email,
         password,
-        callbackURL: "/",
       });
 
       if (user.error) {
@@ -76,10 +77,16 @@ export function RegisterForm() {
             break;
           case "USER_ALREADY_EXISTS":
             friendlyMsg = "Um usuário já foi cadastrado com estes dados.";
+            break;
+          default:
+            friendlyMsg = "Algo deu errado. Tente novamente mais tarde.";
+            return;
         }
 
         toast.error(friendlyMsg);
         resetField("email");
+      } else {
+        router.push("/");
       }
     }
   }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import "./globals.css";
+import type { ReactNode } from "react";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -13,10 +14,10 @@ export const metadata: Metadata = {
   description: "A simple todo-list with auth and todos saved in cloud.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="pt-BR">
