@@ -7,11 +7,13 @@ import * as z from "zod";
 import { InputWithLabel } from "@/components/commons/input-with-label";
 import { Button } from "@/components/ui/button";
 import { useRegisterPassword } from "@/contexts/password-context";
+import { authClient } from "@/lib/auth/client";
 import { getStrongPasswordLevel } from "@/lib/getStrongPasswordLevel";
 import { RegisterStrongIndicator } from "./register-strong-indicator";
 
 const registerSchema = z
   .object({
+    name: z.string().min(3, "Seu nome deve ter mais que 3 letras."),
     email: z.email("Digite um e-mail válido!"),
     password: z
       .string()
@@ -30,6 +32,8 @@ const registerSchema = z
     }
   });
 
+type RegisterSchemaType = z.infer<typeof registerSchema>;
+
 export function RegisterForm() {
   const { setPassword } = useRegisterPassword();
 
@@ -42,8 +46,25 @@ export function RegisterForm() {
     setPassword(passwordValue ?? "");
   }, [passwordValue, setPassword]);
 
-  function onSubmit() {
-    return;
+  function onSubmit({
+    name,
+    email,
+    password,
+    confirmPassword,
+  }: RegisterSchemaType) {
+    const isNameValid = name.length > 3;
+    const isEmailValid = z.email().safeParse(email).success;
+    const isPasswordStrong = getStrongPasswordLevel(password) >= 4;
+    const isPasswordsMatch = password === confirmPassword;
+
+    if (isNameValid && isEmailValid && isPasswordStrong && isPasswordsMatch) {
+      authClient.signUp.email({
+        name,
+        email,
+        password,
+        callbackURL: "/",
+      });
+    }
   }
 
   return (
@@ -51,6 +72,13 @@ export function RegisterForm() {
       className="flex h-max w-full flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <InputWithLabel
+        id="name"
+        label="Nome:"
+        placeholder="Seu nome aqui"
+        errorMessage={formState.errors.name?.message}
+        {...register("name")}
+      />
       <InputWithLabel
         id="email"
         label="E-mail:"
