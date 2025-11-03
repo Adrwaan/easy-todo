@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 import { InputWithLabel } from "@/components/commons/input-with-label";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ const registerSchema = z
     email: z.email("Digite um e-mail válido!"),
     password: z
       .string()
+      .min(8, "Sua senha deve conter no minímo 8 caracteres.")
       .refine((password) => getStrongPasswordLevel(password) >= 4, {
         error: 'Sua senha deve ser ao menos "Boa" para se registrar.',
       }),
@@ -37,7 +39,7 @@ type RegisterSchemaType = z.infer<typeof registerSchema>;
 export function RegisterForm() {
   const { setPassword } = useRegisterPassword();
 
-  const { register, handleSubmit, formState, watch } = useForm({
+  const { register, handleSubmit, formState, watch, resetField } = useForm({
     resolver: zodResolver(registerSchema),
   });
 
@@ -65,7 +67,20 @@ export function RegisterForm() {
         callbackURL: "/",
       });
 
-      console.log(user.error?.message);
+      if (user.error) {
+        let friendlyMsg = "";
+
+        switch (user.error.code) {
+          case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
+            friendlyMsg = "Já existe um usuário com este e-mail!";
+            break;
+          case "USER_ALREADY_EXISTS":
+            friendlyMsg = "Um usuário já foi cadastrado com estes dados.";
+        }
+
+        toast.error(friendlyMsg);
+        resetField("email");
+      }
     }
   }
 
@@ -81,6 +96,7 @@ export function RegisterForm() {
         errorMessage={formState.errors.name?.message}
         {...register("name")}
       />
+
       <InputWithLabel
         id="email"
         label="E-mail:"
@@ -88,6 +104,7 @@ export function RegisterForm() {
         errorMessage={formState.errors.email?.message}
         {...register("email")}
       />
+
       <InputWithLabel
         id="password"
         label="Senha:"
@@ -96,7 +113,9 @@ export function RegisterForm() {
         type="password"
         {...register("password")}
       />
+
       <RegisterStrongIndicator />
+
       <InputWithLabel
         id="confirm_password"
         label="Confirme sua senha:"
@@ -105,9 +124,10 @@ export function RegisterForm() {
         type="password"
         {...register("confirmPassword")}
       />
+
       <Button
         type="submit"
-        className="mt-2 border border-blue-500 bg-blue-500 font-bold duration-300 hover:bg-card hover:text-blue-500"
+        className="mt-2 cursor-pointer border border-blue-500 bg-blue-500 font-bold duration-300 hover:bg-card hover:text-blue-500"
       >
         Criar
       </Button>
