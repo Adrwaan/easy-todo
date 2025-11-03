@@ -5,7 +5,9 @@ import { prisma } from "../prisma";
 export const auth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   database: prismaAdapter(prisma, {
-    provider: "mongodb",
+    provider: "sqlite",
+    // TODO: Re-configurar o auth.ts e o prisma em si para mongodb.
+    // provider: "mongodb",
   }),
 
   emailAndPassword: {

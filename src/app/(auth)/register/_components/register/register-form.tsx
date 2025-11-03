@@ -46,7 +46,7 @@ export function RegisterForm() {
     setPassword(passwordValue ?? "");
   }, [passwordValue, setPassword]);
 
-  function onSubmit({
+  async function onSubmit({
     name,
     email,
     password,
@@ -58,12 +58,14 @@ export function RegisterForm() {
     const isPasswordsMatch = password === confirmPassword;
 
     if (isNameValid && isEmailValid && isPasswordStrong && isPasswordsMatch) {
-      authClient.signUp.email({
+      const user = await authClient.signUp.email({
         name,
         email,
         password,
         callbackURL: "/",
       });
+
+      console.log(user.error?.message);
     }
   }
 
