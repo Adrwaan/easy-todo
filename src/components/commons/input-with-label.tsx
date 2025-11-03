@@ -10,9 +10,16 @@ interface Props
   > {
   id: string;
   label: string;
+  errorMessage?: string;
 }
 
-export function InputWithLabel({ id, label, className = "", ...props }: Props) {
+export function InputWithLabel({
+  id,
+  label,
+  errorMessage,
+  className = "",
+  ...props
+}: Props) {
   return (
     <div className="flex w-full flex-col gap-1">
       <Label className="font-semibold" htmlFor={id}>
@@ -27,6 +34,9 @@ export function InputWithLabel({ id, label, className = "", ...props }: Props) {
         placeholder=""
         {...props}
       />
+      {errorMessage && (
+        <span className="text-red-500 text-sm">{errorMessage}</span>
+      )}
     </div>
   );
 }

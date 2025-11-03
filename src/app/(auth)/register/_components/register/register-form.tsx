@@ -1,29 +1,79 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { InputWithLabel } from "@/components/commons/input-with-label";
 import { Button } from "@/components/ui/button";
 import { useRegisterPassword } from "@/contexts/password-context";
+import { getStrongPasswordLevel } from "@/lib/getStrongPasswordLevel";
 import { RegisterStrongIndicator } from "./register-strong-indicator";
 
+const registerSchema = z
+  .object({
+    email: z.email("Digite um e-mail válido!"),
+    password: z
+      .string()
+      .refine((password) => getStrongPasswordLevel(password) >= 4, {
+        error: 'Sua senha deve ser ao menos "Boa" para se registrar.',
+      }),
+    confirmPassword: z.string(),
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword && password.length > 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: "As senhas não coincidem.",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+
 export function RegisterForm() {
-  const { password, setPassword } = useRegisterPassword();
+  const { setPassword } = useRegisterPassword();
+
+  const { register, handleSubmit, formState, watch } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const passwordValue = watch("password");
+  useEffect(() => {
+    setPassword(passwordValue ?? "");
+  }, [passwordValue, setPassword]);
+
+  function onSubmit() {
+    return;
+  }
 
   return (
-    <form className="flex h-max w-full flex-col gap-4">
-      <InputWithLabel id="email" label="E-mail:" placeholder="seu@email.com" />
+    <form
+      className="flex h-max w-full flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <InputWithLabel
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
+        id="email"
+        label="E-mail:"
+        placeholder="seu@email.com"
+        errorMessage={formState.errors.email?.message}
+        {...register("email")}
+      />
+      <InputWithLabel
         id="password"
         label="Senha:"
         placeholder="*********"
+        errorMessage={formState.errors.password?.message}
         type="password"
+        {...register("password")}
       />
       <RegisterStrongIndicator />
       <InputWithLabel
         id="confirm_password"
         label="Confirme sua senha:"
         placeholder="*********"
+        errorMessage={formState.errors.confirmPassword?.message}
+        type="password"
+        {...register("confirmPassword")}
       />
       <Button
         type="submit"

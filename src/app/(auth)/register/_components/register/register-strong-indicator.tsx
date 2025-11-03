@@ -43,7 +43,7 @@ export function RegisterStrongIndicator() {
           {passwordStrongLevelProps.text}
         </span>
       </p>
-      <div className="grid h-7 w-full grid-cols-5 rounded-xl">
+      <div className="grid h-6 w-full grid-cols-5 rounded-xl">
         <div
           className={cn(
             "rounded-l-xl border border-gray-300",
