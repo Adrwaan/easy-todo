@@ -2,7 +2,7 @@ import { LoginForm } from "./login-form";
 
 export function LoginCard() {
   return (
-    <div className="flex h-max w-3/8 flex-col items-center gap-6 rounded-xl border border-gray-300 bg-card px-12 py-8 shadow-foreground/60 shadow-md">
+    <div className="flex h-max w-3/8 flex-col items-center gap-6 rounded-xl border border-gray-300 bg-card px-12 py-8 shadow-2xl shadow-blue-300/80">
       {/* <div className="relative size-20">
         <Image src={"/logo.webp"} alt="EasyTodo logo" fill />
       </div> */}
