@@ -1,3 +1,10 @@
-export default function page() {
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+
+export default async function page() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login");
+
   return <div>Hello World!</div>;
 }

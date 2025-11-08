@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import type { ReactNode } from "react";
-import { auth } from "@/lib/auth";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -22,9 +19,6 @@ export default async function AuthLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (session) redirect("/");
-
   return (
     <html lang="pt-BR">
       <body

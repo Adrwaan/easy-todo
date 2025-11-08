@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useRegisterPassword } from "@/contexts/password-context";
 import { authClient } from "@/lib/auth/client";
 import { getStrongPasswordLevel } from "@/lib/getStrongPasswordLevel";
+import { cn } from "@/lib/utils";
 import { RegisterStrongIndicator } from "./register-strong-indicator";
 
 const registerSchema = z
@@ -45,6 +46,8 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const passwordValue = watch("password");
   useEffect(() => {
     setPassword(passwordValue ?? "");
@@ -56,17 +59,24 @@ export function RegisterForm() {
     password,
     confirmPassword,
   }: RegisterSchemaType) {
+    setIsLoading(true);
+
     const isNameValid = name.length > 3;
     const isEmailValid = z.email().safeParse(email).success;
     const isPasswordStrong = getStrongPasswordLevel(password) >= 4;
     const isPasswordsMatch = password === confirmPassword;
 
     if (isNameValid && isEmailValid && isPasswordStrong && isPasswordsMatch) {
-      const user = await authClient.signUp.email({
-        name,
-        email,
-        password,
-      });
+      const user = await authClient.signUp
+        .email({
+          name,
+          email,
+          password,
+        })
+        .then((user) => {
+          setIsLoading(false);
+          return user;
+        });
 
       if (user.error) {
         let friendlyMsg = "";
@@ -133,8 +143,14 @@ export function RegisterForm() {
       />
 
       <Button
+        disabled={isLoading}
         type="submit"
-        className="mt-2 cursor-pointer border border-blue-500 bg-blue-500 font-bold duration-300 hover:bg-card hover:text-blue-500"
+        className={cn(
+          "mt-2 cursor-pointer border border-blue-500 bg-blue-500 font-bold duration-300 hover:bg-card hover:text-blue-500",
+          isLoading
+            ? "border-blue-700 bg-blue-700 hover:border-blue-900 hover:bg-blue-900 hover:text-white"
+            : "",
+        )}
       >
         Criar
       </Button>
